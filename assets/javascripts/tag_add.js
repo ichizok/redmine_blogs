@@ -206,7 +206,7 @@ maxitem:10
 		lastselectrestag = "#tagselid_"+selqt;
 		return false;        	
 	}
-	jQuery.post(options.loadinfo,function(data){if (tagtext==''){tagtext = data=data.toLocaleLowerCase();}})				    
+	jQuery.get(options.loadinfo,function(data){if (tagtext==''){tagtext = data=data.toLocaleLowerCase();}})				    
 	var fs = true;
 	this.attr("autocomplete",'off');
 	
