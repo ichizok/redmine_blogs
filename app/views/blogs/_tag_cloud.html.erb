@@ -1,5 +1,5 @@
 <div class="tags">
-<% tag_cloud tag_counts, %w(css1 css2 css3 css4) do |tag, css_class| %>
+<% tag_cloud Blog.where(project_id: @project).tag_counts, %w(css1 css2 css3 css4) do |tag, css_class| %>
   <%= link_to tag.name, { action: :index, tag: tag.name, project_id: @project }, class: css_class %>
 <% end %>
 </div>
