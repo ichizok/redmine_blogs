@@ -4,28 +4,28 @@ class BlogsController < ApplicationController
   helper :attachments
   include AttachmentsHelper
 
-  layout 'header', only: [:index, :new, :show]
+  layout 'header', :only => [:index, :new, :show]
 
-  before_filter :find_blog, except: [:new, :index, :preview, :get_tag_list]
-  before_filter :find_user, only: [:index]
-  before_filter :find_optional_project, except: [:index, :preview, :get_tag_list]
-  before_filter :find_project, only: [:index]
-  before_filter :authorize, except: [:preview, :get_tag_list]
+  before_filter :find_blog, :except => [:new, :index, :preview, :get_tag_list]
+  before_filter :find_user, :only => [:index]
+  before_filter :find_optional_project, :except => [:index, :preview, :get_tag_list]
+  before_filter :find_project, :only => [:index]
+  before_filter :authorize, :except => [:preview, :get_tag_list]
   accept_rss_auth :index
 
   def index
     @tag = params[:tag] if params[:tag]
     @blogs_pages, @blogs = paginate :blogs,
-      per_page: 10,
-      conditions: (@user ? ["author_id = ? and project_id = ?", @user, @project]
+      :per_page => 10,
+      :conditions => (@user ? ["author_id = ? and project_id = ?", @user, @project]
                       : @tag ? ["tags.name = ? and project_id = ?", @tag, @project]
                       : ["project_id = ?", @project]),
-      include: [:author, :project, :tags],
-      order: "#{Blog.table_name}.created_on DESC"
+      :include => [:author, :project, :tags],
+      :order => "#{Blog.table_name}.created_on DESC"
     respond_to do |format|
-      format.html { render layout: !request.xhr? }
-      format.atom { render_feed(@blogs, title: "#{Setting.app_title}: Blogs") }
-      format.rss  { render_feed(@blogs, title: "#{Setting.app_title}: Blogs", format: 'rss' ) }
+      format.html { render :layout => !request.xhr? }
+      format.atom { render_feed(@blogs, :title => "#{Setting.app_title}: Blogs") }
+      format.rss  { render_feed(@blogs, :title => "#{Setting.app_title}: Blogs", :format => 'rss' ) }
     end
   end
 
@@ -41,7 +41,7 @@ class BlogsController < ApplicationController
     if request.post? and @blog.save
       Attachment.attach_files(@blog, params[:attachments])
       flash[:notice] = l(:notice_successful_create)
-      redirect_to action: 'index', project_id: @project
+      redirect_to :action => 'index', :project_id => @project
     end
   end
 
@@ -51,22 +51,22 @@ class BlogsController < ApplicationController
       Attachment.attach_files(@blog, params[:attachments])
       flash[:notice] = l(:notice_successful_update)
     end
-    redirect_to action: 'show', id: @blog
+    redirect_to :action => 'show', :id => @blog
   end
 
   def add_comment
     @comment = Comment.new(params[:comment])
     @comment.author = User.current
     if @blog.comments << @comment
-      redirect_to action: 'show', id: @blog
+      redirect_to :action => 'show', :id => @blog
     else
-      render action: 'show'
+      render :action => 'show'
     end
   end
 
   def destroy_comment
     @blog.comments.find(params[:comment_id]).destroy
-    redirect_to action: 'show', id: @blog
+    redirect_to :action => 'show', :id => @blog
   end
 
   def destroy
@@ -74,18 +74,18 @@ class BlogsController < ApplicationController
     if @blog.destroy
       flash[:notice] = l(:notice_successful_delete)
     end
-    redirect_to action: 'index', project_id: @project
+    redirect_to :action => 'index', :project_id => @project
   end
 
   def preview
     @text = (params[:blog] ? params[:blog][:description] : nil)
     @blog = Blog.find(params[:id]) if params[:id]
     @attachements = @blog.attachments if @blog
-    render partial: 'common/preview'
+    render :partial => 'common/preview'
   end
 
   def get_tag_list
-    render text: Blog.tag_counts.join(',')
+    render :text => Blog.tag_counts.join(',')
   end
 
 private
@@ -111,7 +111,7 @@ private
 
   def find_optional_project
     @project = Project.find(params[:project_id]) unless params[:project_id].blank?
-    allowed = User.current.allowed_to?({controller: params[:controller], action: params[:action]}, @project, global: true)
+    allowed = User.current.allowed_to?({:controller => params[:controller], :action => params[:action]}, @project, :global => true)
     allowed ? true : deny_access
   rescue ActiveRecord::RecordNotFound
     render_404

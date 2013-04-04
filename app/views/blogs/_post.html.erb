@@ -1,14 +1,14 @@
 <h2><%=l(:label_post_new)%></h2>
 
-<%= labelled_form_for :blog, @blog, url: { controller: 'blogs', action: 'new', project_id: @project },
-                                    html: { id: 'blog-form', 
-                                            class: nil,
-                                            multipart: true } do |f| %>
-<%= render partial: 'form', locals: { f: f } %>
+<%= labelled_form_for :blog, @blog, :url => { :controller => 'blogs', :action => 'new', :project_id => @project },
+                                    :html => { :id => 'blog-form', 
+                                            :class => nil,
+                                            :multipart => true } do |f| %>
+<%= render :partial => 'form', :locals => { :f => f } %>
 <%= submit_tag l(:button_create) %>
-<%= preview_link({ controller: 'blogs', action: 'preview', project_id: @project }, 'blog-form') %>
+<%= preview_link({ :controller => 'blogs', :action => 'preview', :project_id => @project }, 'blog-form') %>
 <% if inline %>
-| <%= link_to l(:button_cancel), "#", onclick: '$("#add-blog").hide();' %>
+| <%= link_to l(:button_cancel), "#", :onclick => '$("#add-blog").hide();' %>
 <% end %>
 <% end %>
 <div id="preview" class="wiki"></div>
