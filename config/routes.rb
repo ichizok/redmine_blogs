@@ -1,13 +1,16 @@
 RedmineApp::Application.routes.draw do
-  controller :blogs do
-    match 'projects/:project_id/blogs/new', :to => :new
-    match 'projects/:project_id/blogs(.:format)', :to => :index
-    #match 'blogs/users/:id', :to => :show_by_user
-    #match 'blogs/tags/:id', :to => :show_by_tag
-    match 'blogs/get_tag_list', :to => :get_tag_list
-    match 'blogs/preview', :to => :preview
-    match 'blogs/:id', :to => :show
-    match 'blogs/:id/:action', :via => [:post, :put]
-    match 'blogs/:id/comments/:comment_id', :to => :destroy_comment, :via => [:delete]
+  resources :projects do
+    resources :blogs, :only => [:new, :create, :index]
+  end
+  resources :blogs, :only => [:show, :destroy] do
+    collection do
+      get 'get_tag_list'
+      match 'preview', :via => [:post, :put]
+    end
+    member do
+      match 'edit', :via => [:post, :put]
+      post 'add_comment'
+      delete 'comments/:comment_id', :to => 'blogs#destroy_comment'
+    end
   end
 end

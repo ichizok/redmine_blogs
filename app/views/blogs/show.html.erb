@@ -11,15 +11,18 @@
               :action => 'destroy',
               :id => @blog },
             :confirm => l(:text_are_you_sure),
-            :method => :post,
+            :method => :delete,
             :class => 'icon icon-del' %>
 </div>
 
 <div id="edit-blog" style="display:none;">
-<%= labelled_form_for :blog, @blog, :url => { :controller => 'blogs', :action => 'edit', :id => @blog },
-                                    :html => { :id => 'blog-form', 
-                                            :class => nil,
-                                            :multipart => true } do |f| %>
+<%= labelled_form_for :blog, @blog,
+                      :url => { :controller => 'blogs',
+                                :action => 'edit',
+                                :id => @blog },
+                      :html => { :id => 'blog-form', 
+                                 :class => nil,
+                                 :multipart => true } do |f| %>
 <%= render :partial => 'form', :locals => { :f => f } %>
 <%= submit_tag l(:button_save) %>
 <%= preview_link({ :controller => 'blogs', :action => 'preview', :id => @blog }, 'blog-form') %>

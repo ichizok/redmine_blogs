@@ -22,8 +22,8 @@ Redmine::Plugin.register :redmine_blogs do
   requires_redmine :version_or_higher => '2.1.0'
 
   project_module :blogs do
-    permission :manage_blogs, {:blogs => [:new, :edit, :destroy_comment, :destroy]}, :require => :member
-    permission :comment_blogs, {:blogs => :add_comment}
+    permission :manage_blogs, {:blogs => [:new, :create, :edit, :destroy]}, :require => :member
+    permission :comment_blogs, {:blogs => [:add_comment, :destroy_comment]}
     permission :view_blogs, {:blogs => [:index, :preview, :show, :history]}
   end
 

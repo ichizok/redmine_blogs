@@ -6,10 +6,11 @@ class BlogsController < ApplicationController
 
   layout 'header', :only => [:index, :new, :show]
 
-  before_filter :find_blog, :except => [:new, :index, :preview, :get_tag_list]
+  before_filter :find_blog, :except => [:new, :create, :index, :preview, :get_tag_list]
   before_filter :find_user, :only => [:index]
   before_filter :find_optional_project, :except => [:index, :preview, :get_tag_list]
   before_filter :find_project, :only => [:index]
+  before_filter :build_new_blog, :only => [:new, :create]
   before_filter :authorize, :except => [:preview, :get_tag_list]
   accept_rss_auth :index
 
@@ -35,13 +36,20 @@ class BlogsController < ApplicationController
   end
 
   def new
-    @blog = Blog.new(params[:blog])
-    @blog.author = User.current
-    @blog.project = @project
-    if request.post? and @blog.save
+    respond_to do |format|
+      format.html { render :action => 'new', :layout => !request.xhr? }
+    end
+  end
+
+  def create
+    if @blog.save
       Attachment.attach_files(@blog, params[:attachments])
       flash[:notice] = l(:notice_successful_create)
       redirect_to :action => 'index', :project_id => @project
+    else
+      respond_to do |format|
+        format.html { render :action => 'new' }
+      end
     end
   end
 
@@ -113,6 +121,14 @@ private
     @project = Project.find(params[:project_id]) unless params[:project_id].blank?
     allowed = User.current.allowed_to?({:controller => params[:controller], :action => params[:action]}, @project, :global => true)
     allowed ? true : deny_access
+  rescue ActiveRecord::RecordNotFound
+    render_404
+  end
+
+  def build_new_blog
+    @blog = Blog.new(params[:blog])
+    @blog.author = User.current
+    @blog.project = @project
   rescue ActiveRecord::RecordNotFound
     render_404
   end
