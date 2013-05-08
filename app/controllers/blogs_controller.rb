@@ -129,8 +129,6 @@ private
     @blog = Blog.new(params[:blog])
     @blog.author = User.current
     @blog.project = @project
-  rescue ActiveRecord::RecordNotFound
-    render_404
   end
 
 end
