@@ -33,7 +33,7 @@
   <% end %>
   <div class="box">
     <h3 class="icon22 icon22-tags"><%=l(:label_tag_cloud)%></h3>
-    <%= render :partial => 'tag_cloud', :locals => {:tag_counts => Blog.tag_counts} %>
+    <%= render :partial => 'tag_cloud', :locals => {:tag_counts => Blog.where(:project_id => @project).tag_counts} %>
   </div>
 </div>
 
