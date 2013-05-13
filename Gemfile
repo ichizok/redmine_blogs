@@ -1,3 +1,3 @@
 source 'https://rubygems.org'
 
-gem 'acts-as-taggable-on'
+gem 'redmine_acts_as_taggable_on', '~> 1.0'
