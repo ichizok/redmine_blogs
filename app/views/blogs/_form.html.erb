@@ -10,17 +10,22 @@
 <%= wikitoolbar_for 'blog_description' %>
 
 <% content_for :header_tags do %>
-  <%= stylesheet_link_tag 'tag_add', :media => :all, :plugin => 'redmine_blogs' %>
-  <%= javascript_include_tag 'tag_add', :plugin => 'redmine_blogs' %>
+  <%= stylesheet_link_tag 'jquery.tagit.css', :plugin => 'redmine_blogs' %>
+  <%= javascript_include_tag 'tag-it.min.js', :plugin => 'redmine_blogs' %>
 <% end %>
 
 <script>
   $(function() {
-    $("#blog_tag_list").tag_add({
-      maxitem:0, // max item for out, 0-show all 
-      minlength:2, // min length str for search tags 
-      maxlength:10, // max length str for search tags 
-      loadinfo: "<%= url_for(:controller => 'blogs', :action => 'get_tag_list') %>" //file - data tags 
-    });
+    $.ajax({
+      url: "<%= url_for(:controller => 'blogs', :action => 'get_tag_list') %>", //file - data tags 
+      dataType: 'json',
+      success: function(data) {
+        $("#blog_tag_list").tagit({
+          availableTags: data,
+          autocomplete: { delay: 0, minLength: 2 },
+          allowSpaces: true,
+        })
+      }
+    })
   })
 </script>

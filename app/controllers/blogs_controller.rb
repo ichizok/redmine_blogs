@@ -93,7 +93,7 @@ class BlogsController < ApplicationController
   end
 
   def get_tag_list
-    render :text => Blog.tag_counts.join(',')
+    render :json => Blog.tags_on(:tags).map(&:to_s)
   end
 
 private
