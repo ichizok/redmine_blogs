@@ -10,19 +10,20 @@ class BlogsController < ApplicationController
   before_filter :find_user, :only => [:index]
   before_filter :find_optional_project, :except => [:index, :preview, :get_tag_list]
   before_filter :find_project, :only => [:index]
-  before_filter :build_new_blog, :only => [:new, :create]
+  before_filter :build_new_blog, :only => [:new, :create, :index]
   before_filter :authorize, :except => [:preview, :get_tag_list]
   accept_rss_auth :index
 
   def index
     @tag = params[:tag] if params[:tag]
-    @blogs_pages, @blogs = paginate :blogs,
-      :per_page => 10,
-      :conditions => (@user ? ["author_id = ? and project_id = ?", @user, @project]
-                      : @tag ? ["tags.name = ? and project_id = ?", @tag, @project]
-                      : ["project_id = ?", @project]),
-      :include => [:author, :project, :tags],
-      :order => "#{Blog.table_name}.created_on DESC"
+    @blogs_pages, @blogs = paginate Blog.includes(:author, :project, :tags).
+                                         where(
+                                           @user ? ["author_id = ? and project_id = ?", @user, @project]
+                                           : @tag ? ["tags.name = ? and project_id = ?", @tag, @project]
+                                           : ["project_id = ?", @project]).
+                                         references(:tags).
+                                         order("#{Blog.table_name}.created_on DESC"),
+                                    :per_page => 10
     respond_to do |format|
       format.html { render :layout => !request.xhr? }
       format.atom { render_feed(@blogs, :title => "#{Setting.app_title}: Blogs") }
@@ -55,7 +56,7 @@ class BlogsController < ApplicationController
 
   def edit
     return render_403 if User.current != @blog.author
-    if request.put? and @blog.update_attributes(params[:blog])
+    if @blog.update_attributes(params[:blog])
       Attachment.attach_files(@blog, params[:attachments])
       flash[:notice] = l(:notice_successful_update)
     end

@@ -5,7 +5,9 @@ class Blog < ActiveRecord::Base
 
   belongs_to :project
   belongs_to :author, :class_name => 'User', :foreign_key => 'author_id'
-  has_many :comments, :as => :commented, :dependent => :delete_all, :order => 'created_on'
+  has_many :comments,
+    lambda { order(:created_on) },
+    :as => :commented, :dependent => :delete_all
 
   acts_as_taggable
   acts_as_attachable
@@ -17,23 +19,25 @@ class Blog < ActiveRecord::Base
   attr_accessible :summary, :description, :title, :tag_list
 
   acts_as_activity_provider :type => 'blogs',
-                            :find_options => {:include => [:author, :project]},
+                            :scope => preload(:author, :project),
                             :author_key => :author_id
 
   acts_as_event :type => 'blog-post',
                 :url => Proc.new {|o| {:controller => 'blogs', :action => 'show', :id => o.id}}
 
-  acts_as_searchable :columns => ['title', 'summary', "#{Blog.table_name}.description"],
+  acts_as_searchable :columns => ['title', 'summary', "#{table_name}.description"],
                      # sort by id so that limited eager loading doesn't break with postgresql
                      #:order_column => :id,
-                     :include => :project
+                     :preload => [:project]
+
+  scope :visible, lambda {|*args|
+    joins(:author, :project).
+    where(Project.allowed_to_condition(args.shift || User.current, :view_blogs, *args))
+  }
 
   # returns latest blogs for projects visible by user
   def self.latest(user = User.current, count = 5)
-    find(:all, :limit => count,
-         :conditions => Project.allowed_to_condition(user, :view_news),
-         :include => [:author, :project],
-         :order => "#{Blog.table_name}.created_on DESC")
+    Blog.includes(:author, :project).visible(user).limit(count).order(:created_on => :desc)
   end
 
   def editable_by?(user = User.current)

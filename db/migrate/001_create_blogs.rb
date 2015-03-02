@@ -2,7 +2,7 @@ class CreateBlogs < ActiveRecord::Migration
   def self.up
     create_table :blogs do |t|
       t.column :summary, :string
-      t.column :description, :text, {:null => false, :default => ''}
+      t.column :description, :text
       t.column :title, :string, {:null => false, :default => ''}
       t.column :comments_count, :integer, {:null => true, :default => 0}
       t.column :created_on, :datetime

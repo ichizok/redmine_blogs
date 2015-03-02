@@ -1,5 +1,5 @@
 require 'redmine'
-require 'redmine_acts_as_taggable_on/initialize'
+require 'acts-as-taggable-on'
 
 require 'application_helper_global_patch'
 require 'comment_patch'
@@ -18,9 +18,8 @@ Redmine::Plugin.register :redmine_blogs do
   name 'Redmine Blogs plugin'
   author 'A. Chaika, Kyanh, Eric Davis'
   description 'Redmine Blog plugin'
-  version '0.5.0'
-  requires_redmine :version_or_higher => '2.2.0'
-  requires_acts_as_taggable_on
+  version '0.6.0'
+  requires_redmine :version_or_higher => '3.0.0'
 
   project_module :blogs do
     permission :manage_blogs, {:blogs => [:new, :create, :edit, :destroy]}, :require => :member

@@ -1,1 +1,4 @@
-class AddTagsAndTaggings < RedmineActsAsTaggableOn::Migration; end
+class AddTagsAndTaggings < ActiveRecord::Migration
+  def self.up; end
+  def self.down; end
+end

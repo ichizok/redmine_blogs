@@ -5,10 +5,10 @@ RedmineApp::Application.routes.draw do
   resources :blogs, :only => [:show, :destroy] do
     collection do
       get 'get_tag_list'
-      match 'preview', :via => [:post, :put]
+      match 'preview', :via => [:post, :put, :patch]
     end
     member do
-      match 'edit', :via => [:post, :put]
+      match 'edit', :via => [:post, :put, :patch]
       post 'add_comment'
       delete 'comments/:comment_id', :to => 'blogs#destroy_comment'
     end
