@@ -7,3 +7,6 @@ ja:
   label_tag_cloud: タグクラウド
   label_read_more: もっと読む...
   label_all_blogs: すべての記事
+  permission_manage_blogs: ブログの管理
+  permission_comment_blogs: ブログへのコメント
+  permission_view_blogs: ブログの閲覧
