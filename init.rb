@@ -23,8 +23,8 @@ Redmine::Plugin.register :redmine_blogs do
 
   project_module :blogs do
     permission :manage_blogs, {:blogs => [:new, :create, :edit, :destroy]}, :require => :member
-    permission :comment_blogs, {:blogs => [:add_comment, :destroy_comment]}
-    permission :view_blogs, {:blogs => [:index, :preview, :show, :history]}
+    permission :comment_blogs, {:blogs => [:add_comment, :destroy_comment]}, :require => :loggedin
+    permission :view_blogs, {:blogs => [:index, :preview, :show, :history]}, :read => true
   end
 
   menu :project_menu, :blogs, {:controller => 'blogs', :action => 'index'},
